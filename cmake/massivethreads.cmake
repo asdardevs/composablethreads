@@ -6,9 +6,16 @@ set(CMPTH_MASSIVETHREADS_CC ${CMAKE_C_COMPILER})
 
 set(CMPTH_MASSIVETHREADS_CFLAGS ${CMPTH_GLOBAL_CFLAGS} -Wall)
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+# if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+# list(APPEND CMPTH_MASSIVETHREADS_CFLAGS -O0 -g)
+# elseif(${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
+# list(APPEND CMPTH_MASSIVETHREADS_CFLAGS -O3 -g -DNDEBUG)
+# else()
+# list(APPEND CMPTH_MASSIVETHREADS_CFLAGS -O3 -DNDEBUG)
+# endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     list(APPEND CMPTH_MASSIVETHREADS_CFLAGS -O0 -g)
-elseif (${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
+elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     list(APPEND CMPTH_MASSIVETHREADS_CFLAGS -O3 -g -DNDEBUG)
 else()
     list(APPEND CMPTH_MASSIVETHREADS_CFLAGS -O3 -DNDEBUG)
@@ -26,14 +33,15 @@ string(REPLACE ";" " " CMPTH_MASSIVETHREADS_CFLAGS "${CMPTH_MASSIVETHREADS_CFLAG
 configure_file(cmake/massivethreads-configure.sh.in massivethreads-configure.sh @ONLY)
 
 ExternalProject_Add(MassiveThreads
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/massivethreads
-    #GIT_REPOSITORY https://github.com/massivethreads/massivethreads
-    CONFIGURE_COMMAND /bin/sh ${CMAKE_CURRENT_BINARY_DIR}/massivethreads-configure.sh
-        <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
-        --enable-myth-ld=no)
-    # TODO: myth-ld produces this error:
-    #   gcc: error: @myth-ld.opts: No such file or directory
 
+    # SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/massivethreads
+    GIT_REPOSITORY https://github.com/massivethreads/massivethreads
+    CONFIGURE_COMMAND /bin/sh ${CMAKE_CURRENT_BINARY_DIR}/massivethreads-configure.sh
+    <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
+    --enable-myth-ld=no)
+
+# TODO: myth-ld produces this error:
+# gcc: error: @myth-ld.opts: No such file or directory
 ExternalProject_Get_Property(MassiveThreads source_dir)
 ExternalProject_Get_Property(MassiveThreads install_dir)
 
@@ -61,8 +69,6 @@ set_property(
     dl
     pthread)
 
-
-install(DIRECTORY ${install_dir}/bin/       DESTINATION bin)
-install(DIRECTORY ${install_dir}/include/   DESTINATION include)
-install(DIRECTORY ${install_dir}/lib/       DESTINATION lib)
-
+install(DIRECTORY ${install_dir}/bin/ DESTINATION bin)
+install(DIRECTORY ${install_dir}/include/ DESTINATION include)
+install(DIRECTORY ${install_dir}/lib/ DESTINATION lib)
